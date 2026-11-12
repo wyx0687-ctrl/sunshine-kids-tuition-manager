@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sunshine Kids — Tuition Manager</title>
+  <style>
+    :root {
+      --bg: #fffbe3;
+      --card: #ffffff;
+      --ink: #1c1b1a;
+      --muted: #7b704c;
+      --line: #f0e7ac;
+      --gold: #f4d73d;
+      --orange: #f6a93d;
+      --red: #e36b72;
+      --green: #61b96b;
+      --blue: #4c7cff;
+      --shadow: 0 12px 32px rgba(100, 85, 15, 0.12);
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+    }
+    body { overflow-x: hidden; }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .hidden { display: none !important; }
+    .app-shell {
+      min-height: 100vh;
+      background: linear-gradient(180deg, #fff9c8 0%, #fff4c5 100%);
+    }
+    .auth-wrap {
+      min-height: 100vh; display: grid; place-items: center; background: linear-gradient(160deg,#fff9b8,#ffe3b8); padding: 20px 14px;
+    }
+    .auth-box {
+      width: min(420px, 100%); background: rgba(255,255,255,0.78); border: 1px solid var(--line); border-radius: 22px; box-shadow: var(--shadow); padding: 24px;
+    }
+    .auth-box h2 { margin: 0 0 16px; font-size: 28px; }
+    .auth-grid { display: grid; gap: 12px; }
+    .field { display: grid; gap: 8px; }
+    .field label { font-weight: 700; color: var(--muted); }
+    .field input, .field select, .field textarea {
+      width: 100%; border: 1px solid var(--line); background: #fffdfb; border-radius: 12px; padding: 12px 14px; outline: none;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--orange); box-shadow: 0 0 0 3px rgba(246,169,61,0.15); }
+    .btn, .ghost, .secondary {
+      border-radius: 12px; border: 0; padding: 12px 16px; font-weight: 800; transition: 0.2s ease; 
+    }
+    .btn { background: linear-gradient(135deg,var(--orange),#f8c95b); color: #1b1b1b; }
+    .btn:hover { transform: translateY(-1px); }
+    .ghost { background: #fff; border: 1px solid var(--line); color: var(--ink); }
+    .secondary { background: #f7f0cb; color: var(--ink); border: 1px solid var(--line); }
+    .notice, .muted, .empty {
+      color: var(--muted);
+    }
+    .notice {
+      background: #fff9d5; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; line-height: 1.5; margin-bottom: 12px;
+    }
+    .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .stack { display: grid; gap: 12px; }
+    .app {
+      display: grid; grid-template-columns: 240px 1fr; min-height: 100vh;
+    }
+    .sidebar {
+      background: linear-gradient(180deg, #fff8d0 0%, #fff6d2 100%); border-right: 1px solid var(--line); padding: 18px 14px;
+    }
+    .brand { display:flex; justify-content:center; padding: 8px 8px 14px; }
+    .logo {
+      width: 120px; height: 120px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #fff2a1 0%, #f2d84f 35%, #efb92d 100%); border: 3px solid #fff; box-shadow: var(--shadow); position: relative;
+    }
+    .logo::before { content: "☀"; position:absolute; inset:0; display:grid; place-items:center; font-size: 52px; }
+    .navlabel { font-size: 11px; font-weight: 900; letter-spacing: 0.12em; color: var(--muted); margin: 12px 8px 10px; }
+    .nav { display: grid; gap: 8px; }
+    .nav button {
+      border: 0; background: transparent; text-align: left; padding: 10px 12px; border-radius: 10px; font-weight: 700; color: var(--ink); display:flex; align-items:center; gap:8px;
+    }
+    .nav button.active { background: #fff; border: 1px solid var(--line); box-shadow: 0 6px 16px rgba(0,0,0,0.04); }
+    .sidebar-foot { margin-top: 18px; padding-top: 12px; border-top: 1px dashed var(--line); color: var(--muted); font-size: 13px; }
+    .main { padding: 20px; }
+    .topbar {
+      display:flex; justify-content:space-between; align-items:center; gap:12px; background: rgba(255,255,255,0.66); border:1px solid var(--line); border-radius: 16px; padding: 16px 18px; margin-bottom: 18px;
+    }
+    .content { display: grid; gap: 18px; }
+    .page { display: block; }
+    .pagehead {
+      display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom: 12px;
+    }
+    .pagehead h1 { margin:0; font-size: clamp(26px, 3vw, 38px); }
+    .sub { margin: 6px 0 0; color: var(--muted); }
+    .stats {
+      display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 16px;
+    }
+    .stats.two { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .stats.three { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .card {
+      background: var(--card); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); padding: 18px;
+    }
+    .statlabel { color: var(--muted); font-size: 13px; font-weight: 700; }
+    .statvalue { font-size: clamp(28px, 2vw, 40px); font-weight: 900; margin: 8px 0 4px; }
+    .statnote { color: var(--muted); font-size: 13px; }
+    .grid-two { display:grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 720px; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #f3ead0; vertical-align: top; }
+    th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; }
+    .lesson { border: 1px solid var(--line); background: #fffdf7; border-radius: 14px; padding: 12px 14px; margin-top: 10px; }
+    .pill {
+      display:inline-block; padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; border: 1px solid transparent;
+    }
+    .pill.present { background: rgba(97,185,107,0.12); color: #2d7a37; border-color: rgba(97,185,107,0.22); }
+    .pill.absent { background: rgba(227,107,114,0.12); color: #b33d4f; border-color: rgba(227,107,114,0.2); }
+    .pill.late { background: rgba(246,169,61,0.12); color: #945d00; border-color: rgba(246,169,61,0.2); }
+    .action-row { display:flex; gap:8px; flex-wrap:wrap; }
+    .small-btn { padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); background: #fff; } 
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(26, 24, 20, 0.38); display: grid; place-items: center; padding: 16px; z-index:50; }
+    .modal { width: min(640px, 100%); background: #fffefb; border: 1px solid var(--line); border-radius: 20px; box-shadow: var(--shadow); padding: 22px; }
+    .modal h3 { margin: 0 0 14px; }
+    .form-grid { display: grid; gap: 14px; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .modal-actions { display:flex; justify-content:flex-end; gap:10px; margin-top: 12px; }
+    .toast { position: fixed; left:50%; bottom:24px; transform:translateX(-50%); background:#1f2a44; color:#fff; padding:12px 18px; border-radius:10px; box-shadow:var(--shadow); z-index: 60; }
+    @media (max-width: 900px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { border-right: 0; border-bottom: 1px solid var(--line); }
+      .stats { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .grid-two { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) {
+      .stats, .stats.two, .stats.three, .two-col { grid-template-columns: 1fr; }
+      .main { padding: 14px; }
+      .topbar, .pagehead, .row { display: grid; align-items: start; }
+    }
+  </style>
+</head>
+<body>
+  <div id="appShell" class="app-shell"></div>
+<script>
+  const STORAGE_KEY = 'sunshine_kids_manager_v1';
+  const SUBJECTS = [
+    { key: 'Math', label: 'Mathematics', icon: '➗' },
+    { key: 'SC', label: 'Science', icon: '🔬' },
+    { key: 'BM', label: 'Bahasa Malaysia', icon: '📗' },
+    { key: 'CN', label: 'Chinese', icon: '🀄' },
+    { key: 'EN', label: 'English', icon: '📘' }
+  ];
+
+  const DEFAULT_STORE = {
+    accounts: [{ id: 'teacher', role: 'teacher', name: 'Teacher', password: 'sunshine123' }],
+    students: [],
+    lessons: [],
+    attendance: [],
+    progress: [],
+    payments: [],
+    stories: [],
+    submissions: [],
+    recalls: []
+  };
+
+  const state = {
+    session: null,
+    activePage: 'dashboard',
+    modal: null,
+    studentSearch: ''
+  };
+
+  function loadStore() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_STORE));
+        return structuredClone(DEFAULT_STORE);
+      }
+      const parsed = JSON.parse(raw);
+      return {
+        ...structuredClone(DEFAULT_STORE),
+        ...parsed,
+        accounts: Array.isArray(parsed.accounts) ? parsed.accounts : DEFAULT_STORE.accounts,
+        students: Array.isArray(parsed.students) ? parsed.students : [],
+        lessons: Array.isArray(parsed.lessons) ? parsed.lessons : [],
+        attendance: Array.isArray(parsed.attendance) ? parsed.attendance : [],
+        progress: Array.isArray(parsed.progress) ? parsed.progress : [],
+        payments: Array.isArray(parsed.payments) ? parsed.payments : [],
+        stories: Array.isArray(parsed.stories) ? parsed.stories : [],
+        submissions: Array.isArray(parsed.submissions) ? parsed.submissions : [],
+        recalls: Array.isArray(parsed.recalls) ? parsed.recalls : []
+      };
+    } catch (e) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_STORE));
+      return structuredClone(DEFAULT_STORE);
+    }
+  }
+
+  const store = loadStore();
+
+  function saveStore() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
+  }
+
+  function uid(prefix = 'id') {
+    return prefix + '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+  }
+
+  function esc(value) {
+    return String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  function money(value) {
+    return 'RM ' + Number(value || 0).toFixed(2);
+  }
+
+  function toast(msg) {
+    const node = document.createElement('div');
+    node.className = 'toast';
+    node.textContent = msg;
+    document.body.appendChild(node);
+    setTimeout(() => node.remove(), 1800);
+  }
+
+  function dateNow() {
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  function studentName(id) {
+    const student = store.students.find(s => s.id === id);
+    return student ? student.name : 'Unknown student';
+  }
+
+  function showTeacherPage(page) {
+    state.activePage = page;
+    renderTeacherApp();
+  }
+
+  function authTemplate() {
+    return `
+      <div class="auth-wrap">
+        <div class="auth-box">
+          <h2>Sunshine Kids</h2>
+          <div id="authMode" class="notice">Choose a role to continue.</div>
+          <div class="auth-grid">
+            <div class="row">
+              <button class="btn" data-role="teacher" style="flex:1">Teacher</button>
+              <button class="secondary" data-role="student" style="flex:1">Student</button>
+            </div>
+            <div id="authForm" class="stack"></div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderAuth() {
+    const root = document.getElementById('appShell');
+    root.innerHTML = authTemplate();
+    const modeNode = document.getElementById('authMode');
+    const formNode = document.getElementById('authForm');
+
+    const roleButtons = root.querySelectorAll('[data-role]');
+    roleButtons.forEach(btn => {
+      btn.onclick = () => {
+        const role = btn.dataset.role;
+        state.session = null;
+        modeNode.textContent = role === 'teacher' ? 'Teacher sign in' : 'Student sign in';
+        formNode.innerHTML = `
+          <form id="loginForm">
+            ${role === 'student' ? `<div class="field"><label>Student name</label><input name="name" placeholder="Your full name" /></div>` : ''}
+            ${role === 'teacher' ? `<div class="field"><label>Username</label><input name="username" placeholder="teacher" value="teacher" /></div>` : ''}
+            <div class="field"><label>${role === 'teacher' ? 'Password' : 'Student username'}</label><input name="username" placeholder="${role === 'teacher' ? 'Password' : 'Your student username'}" value="" /></div>
+            <div class="field"><label>Password</label><input type="password" name="password" placeholder="Enter password" /></div>
+            <button class="btn" type="submit" style="margin-top: 6px;">Continue</button>
+          </form>
+        `;
+        formNode.querySelector('form').onsubmit = (event) => {
+          event.preventDefault();
+          const formData = new FormData(event.target);
+          const username = String(formData.get('username') || '').trim();
+          const password = String(formData.get('password') || '').trim();
+          const name = String(formData.get('name') || '').trim();
+          if (role === 'teacher') {
+            const account = store.accounts.find(a => a.role === 'teacher' && a.id === username && a.password === password);
+            if (account) {
+              state.session = { role: 'teacher', username: account.id, name: account.name };
+              renderTeacherApp();
+            } else {
+              toast('Teacher login failed. Default teacher username is teacher and password is sunshine123');
+            }
+          } else {
+            const account = store.accounts.find(a => a.role === 'student' && a.id.toLowerCase() === username.toLowerCase() && a.password === password && (a.name.toLowerCase() === name.toLowerCase() || !name));
+            if (account) {
+              state.session = { role: 'student', username: account.id, name: account.name };
+              renderStudentApp();
+            } else {
+              toast('Student login failed. Please check your username, name, and password.');
+            }
+          }
+        };
+      };
+    });
+  }
+
+  function logout() {
+    state.session = null;
+    renderAuth();
+  }
+
+  function renderTeacherApp() {
+    const root = document.getElementById('appShell');
+    root.innerHTML = `
+      <div class="app">
+        <aside class="sidebar">
+          <div class="brand"><div class="logo" aria-label="Sunshine Kids"></div></div>
+          <div class="navlabel">WORKSPACE</div>
+          <nav class="nav">
+            <button class="${state.activePage === 'dashboard' ? 'active' : ''}" data-page="dashboard">▦ Dashboard</button>
+            <button class="${state.activePage === 'students' ? 'active' : ''}" data-page="students">♙ Students</button>
+            <button class="${state.activePage === 'lessons' ? 'active' : ''}" data-page="lessons">▤ Lessons</button>
+            <button class="${state.activePage === 'attendance' ? 'active' : ''}" data-page="attendance">✓ Attendance</button>
+            <button class="${state.activePage === 'progress' ? 'active' : ''}" data-page="progress">↗ Progress</button>
+            <button class="${state.activePage === 'payments' ? 'active' : ''}" data-page="payments">＄ Payments</button>
+            <button class="${state.activePage === 'understanding' ? 'active' : ''}" data-page="understanding">✎ Understanding</button>
+            <button class="${state.activePage === 'recall' ? 'active' : ''}" data-page="recall">↺ Recall</button>
+            <button class="${state.activePage === 'rewards' ? 'active' : ''}" data-page="rewards">★ Rewards</button>
+          </nav>
+          <div class="sidebar-foot">A brighter reading journey, one lesson at a time.<br><br><button class="ghost" onclick="logout()" style="width:100%">⎋ Log out</button></div>
+        </aside>
+        <main class="main">
+          <header class="topbar">
+            <div><strong id="topTitle">${state.activePage[0].toUpperCase() + state.activePage.slice(1)}</strong><br><small>Reading Tuition Management</small></div>
+            <div class="muted">${new Date().toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}</div>
+          </header>
+          <div class="content">
+            ${renderTeacherPageContent()}
+          </div>
+        </main>
+      </div>
+    `;
+
+    root.querySelectorAll('.nav button').forEach((button) => {
+      button.onclick = () => showTeacherPage(button.dataset.page);
+    });
+  }
+
+  function renderTeacherPageContent() {
+    switch (state.activePage) {
+      case 'dashboard':
+        return renderDashboard();
+      case 'students':
+        return renderStudents();
+      case 'lessons':
+        return renderLessons();
+      case 'attendance':
+        return renderAttendance();
+      case 'progress':
+        return renderProgress();
+      case 'payments':
+        return renderPayments();
+      case 'understanding':
+        return renderUnderstanding();
+      case 'recall':
+        return renderRecall();
+      case 'rewards':
+        return renderRewards();
+      default:
+        return renderDashboard();
+    }
+  }
+
+  function renderDashboard() {
+    const paid = store.payments.reduce((total, item) => total + Number(item.amount || 0), 0);
+    const billed = store.payments.reduce((total, item) => total + Number(item.fee || 0), 0);
+    const attendanceEntries = store.attendance.length;
+    const presentEntries = store.attendance.filter(a => a.status === 'Present').length;
+    const attendanceRate = attendanceEntries ? Math.round((presentEntries / attendanceEntries) * 100) + '%' : '—';
+
+    return `
+      <section class="page">
+        <div class="pagehead">
+          <div>
+            <h1>Hello, teacher! 👋</h1>
+            <p class="sub">Here’s how your little sunshines are doing today.</p>
+          </div>
+          <button class="btn" onclick="openStudentModal()">＋ Add student</button>
+        </div>
+        <div class="stats">
+          <div class="card"><div class="statlabel">Total students</div><div class="statvalue">${store.students.length}</div><div class="statnote">Children with us</div></div>
+          <div class="card"><div class="statlabel">Lessons recorded</div><div class="statvalue">${store.lessons.length}</div><div class="statnote">Classes taught so far</div></div>
+          <div class="card"><div class="statlabel">Attendance rate</div><div class="statvalue">${attendanceRate}</div><div class="statnote">From your attendance records</div></div>
+          <div class="card"><div class="statlabel">Outstanding fees</div><div class="statvalue">${money(Math.max(0, billed - paid))}</div><div class="statnote">Still to be paid</div></div>
+        </div>
+        <div class="grid-two" style="margin-top:18px;">
+          <div class="card">
+            <div class="row"><h3>Recent students</h3><button class="secondary" onclick="showTeacherPage('students')">View all</button></div>
+            ${store.students.length ? store.students.slice(-4).reverse().map(student => `
+              <div class="row" style="padding:10px 0;border-bottom:1px solid var(--line);">
+                <div><strong>${esc(student.name)}</strong><div class="muted">${(student.subjects || []).join(', ') || 'No subject set'}</div></div>
+                <div class="muted">${student.age || ''}</div>
+              </div>
+            `).join('') : '<div class="empty">No students yet.</div>'}
+          </div>
+          <div class="card">
+            <h3>Lessons by subject</h3>
+            <div class="stack">
+              ${SUBJECTS.map((subject, index) => {
+                const count = store.lessons.filter(item => item.subject === subject.key).length;
+                return `
+                  <div class="row" style="margin-top:${index ? '14px' : '0'};">
+                    <span class="muted">${subject.icon} ${subject.label}</span>
+                    <strong>${count}</strong>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:18px;">
+          <div class="row"><div><h3>Clear all data</h3><p class="muted" style="margin:0">Erase all teaching records.</p></div><button class="secondary" onclick="clearAllData()">Reset app</button></div>
+        </div>
+      </section>
+    `;
+  }
+
+  function renderStudents() {
+    const query = (state.studentSearch || '').toLowerCase();
+    const list = store.students.filter(student => {
+      const text = `${student.name} ${(student.subjects || []).join(' ')} ${student.parent || ''} ${student.contact || ''}`.toLowerCase();
+      return text.includes(query);
+    });
+
+    return `
+      <section class="page">
+        <div class="pagehead">
+          <div><h1>Students</h1><p class="sub">All your little learners, and the subjects they’re learning.</p></div>
+          <button class="btn" onclick="openStudentModal()">＋ Add student</button>
+        </div>
+        <div class="card">
+          <div class="row" style="margin-bottom: 14px;">
+            <h3>Student directory</h3>
+            <input class="field" style="margin:0; max-width: 280px;" placeholder="Search students…" value="${esc(state.studentSearch)}" oninput="state.studentSearch=this.value; renderTeacherApp();" />
+          </div>
+          ${list.length ? `<div class="table-wrap"><table><thead><tr><th>Student</th><th>Age</th><th>Subjects</th><th>Parent / guardian</th><th>Contact</th><th>Actions</th></tr></thead><tbody>${list.map(student => `
+            <tr>
+              <td><strong>${esc(student.name)}</strong></td>
+              <td>${esc(student.age || '')}</td>
+              <td>${(student.subjects || []).map(s => SUBJECTS.find(x => x.key === s)?.label || s).join(', ') || '—'}</td>
+              <td>${esc(student.parent || '')}</td>
+              <td>${esc(student.contact || '')}</td>
+              <td><div class="action-row"><button class="small-btn" onclick="editStudent('${student.id}')">Edit</button><button class="small-btn" onclick="deleteStudent('${student.id}')">Delete</button></div></td>
+            </tr>
+          `).join('')}</tbody></table></div>` : '<div class="empty">No students match this search.</div>'}
+        </div>
+      </section>
+    `;
+  }
+
+  function renderLessons() {
+    return `
+      <section class="page">
+        <div class="pagehead">
+          <div><h1>Lessons</h1><p class="sub">Jot down what you taught in each class.</p></div>
+          <button class="btn" onclick="openLessonModal()">＋ Record lesson</button>
+        </div>
+        <div class="card">
+          <h3>Lesson library & records</h3>
+          ${store.lessons.length ? [...store.lessons].reverse().map(item => `
+            <div class="lesson">
+              <div class="row">
+                <div>
+                  <h4>${esc(item.title)}</h4>
+                  <p class="muted">${esc(item.studentName || '')} · ${SUBJECTS.find(s => s.key === item.subject)?.label || item.subject}</p>
+                </div>
+                <div class="muted">${esc(item.date || dateNow())}</div>
+              </div>
+              <p>${esc(item.notes || 'No notes yet.')}</p>
+              <div class="action-row"><button class="small-btn" onclick="deleteLesson('${item.id}')">Delete</button></div>
+            </div>
+          `).join('') : '<div class="empty">No lesson records yet.</div>'}
+        </div>
+      </section>
+    `;
+  }
+
+  function renderAttendance() {
+    return `
+      <section class="page">
+        <div class="pagehead">
+          <div><h1>Attendance</h1><p class="sub">Who came to class today? Keep track here.</p></div>
+          <button class="btn" onclick="openAttendanceModal()">＋ Mark attendance</button>
+        </div>
+        <div class="card">
+          <h3>Attendance history</h3>
+          ${store.attendance.length ? `<div class="table-wrap"><table><thead><tr><th>Date</th><th>Student</th><th>Subject</th><th>Status</th><th>Note</th></tr></thead><tbody>${store.attendance.slice().reverse().map(entry => `
+            <tr>
+              <td>${esc(entry.date || '')}</td>
+              <td>${esc(studentName(entry.studentId))}</td>
+              <td>${SUBJECTS.find(s => s.key === entry.subject)?.label || entry.subject}</td>
+              <td><span class="pill ${entry.status.toLowerCase()}">${esc(entry.status || 'Present')}</span></td>
+              <td>${esc(entry.note || '')}</td>
+            </tr>
+          `).join('')}</tbody></table></div>` : '<div class="empty">No attendance recorded yet.</div>'}
+        </div>
+      </section>
+    `;
+  }
+
+  function renderProgress() {
+    return `
+      <section class="page">
+        <div class="pagehead">
+          <div><h1>Progress</h1><p class="sub">See how each child is growing in every subject.</p></div>
+          <button class="btn" onclick="openProgressModal()">＋ Add assessment</button>
+        </div>
+        <div class="card">
+          <h3>Student progress records</h3>
+          ${store.progress.length ? `<div class="table-wrap"><table><thead><tr><th>Date</th><th>Student</th><th>Subject</th><th>Score</th><th>Teacher note</th></tr></thead><tbody>${store.progress.slice().reverse().map(item => `
+            <tr><td>${esc(item.date || '')}</td><td>${esc(studentName(item.studentId))}</td><td>${SUBJECTS.find(s => s.key === item.subject)?.label || item.subject}</td><td>${esc(item.score || '0')}</td><td>${esc(item.note || '')}</td></tr>
+          `).join('')}</tbody></table></div>` : '<div class="empty">No assessment data yet.</div>'}
+        </div>
+      </section>
+    `;
+  }
+
+  function renderPayments() {
+    const billed = store.payments.reduce((total, item) => total + Number(item.fee || 0), 0);
+    const paid = store.payments.reduce((total, item) => total + Number(item.amount || 0), 0);
+    return `
+      <section class="page">
+        <div class="pagehead">
+          <div><h1>Payments</h1><p class="sub">Keep a simple record of fees and what’s been paid.</p></div>
+          <button class="btn" onclick="openPaymentModal()">＋ Record payment</button>
+        </div>
+        <div class="stats two">
+          <div class="card"><div class="statlabel">Fees recorded</div><div class="statvalue">${money(billed)}</div></div>
+          <div class="card"><div class="statlabel">Paid so far</div><div class="statvalue">${money(paid)}</div></div>
+        </div>
+        <div class="card" style="margin-top:18px;">
+          <h3>Payment records</h3>
+          ${store.payments.length ? `<div class="table-wrap"><table><thead><tr><th>Date</th><th>Student</th><th>Fee</th><th>Amount paid</th><th>Note</th></tr></thead><tbody>${store.payments.slice().reverse().map(item => `
+            <tr><td>${esc(item.date || '')}</td><td>${esc(studentName(item.studentId))}</td><td>${money(item.fee)}</td><td>${money(item.amount)}</td><td>${esc(item.note || '')}</td></tr>
+          `).join('')}</tbody></table></div>` : '<div class="empty">No payments recorded yet.</div>'}
+        </div>
+      </section>
+    `;
+  }
+
+  function renderUnderstanding() {
+    const studentAccounts = store.accounts.filter(account => account.role === 'student');
+    const judgedSubmissions = store.submissions.filter(item => item.verdict);
+    const understoodRate = judgedSubmissions.length ? Math.round((judgedSubmissions.filter(item => item.verdict === 'Understood').length / judgedSubmissions.length) * 100) + '%' : '—';
+
+    return `
+      <section class="page">
+        <div class="pagehead">
+          <div><h1>Understanding check</h1><p class="sub">See how the children did on their quizzes and whether they understood.</p></div>
+          <div class="action-row">
+            <button class="btn" onclick="openStudentLoginModal()">＋ Add student login</button>
+            <button class="secondary" onclick="openQuizModal()">＋ New quiz</button>
+          </div>
+        </div>
+        <div class="stats three">
+          <div class="card"><div class="statlabel">Quizzes</div><div class="statvalue">${store.stories.length}</div></div>
+          <div class="card"><div class="statlabel">Submissions</div><div class="statvalue">${store.submissions.length}</div></div>
+          <div class="card"><div class="statlabel">Understood</div><div class="statvalue">${understoodRate}</div></div>
+        </div>
+        <div class="card" style="margin-top:18px;">
+          <div class="row"><h3>Student logins</h3></div>
+          ${studentAccounts.length ? `<div class="table-wrap"><table><thead><tr><th>Student</th><th>Username</th><th>Actions</th></tr></thead><tbody>${studentAccounts.map(account => `
+            <tr><td>${esc(account.name)}</td><td>${esc(account.id)}</td><td><div class="action-row"><button class="small-btn" onclick="resetStudentPassword('${account.id}')">Reset password</button><button class="small-btn" onclick="deleteStudentAccount('${account.id}')">Remove</button></div></td></tr>
+          `).join('')}</tbody></table></div>` : '<div class="empty">No student login accounts yet.</div>'}
+        </div>
+        <div class="card" style="margin-top:18px;">
+          <h3>Quizzes (shown to students)</h3>
+          ${store.stories.length ? store.stories.map(item => `
+            <div class="lesson">
+              <div class="row"><div><h4>${esc(item.title)}</h4><p class="muted">${SUBJECTS.find(s => s.key === item.subject)?.label || item.subject}</p></div><button class="small-btn" onclick="deleteQuiz('${item.id}')">Delete</button></div>
+              <p>${esc(item.text || '')}</p>
+            </div>
+          `).join('') : '<div class="empty">No quiz has been created yet.</div>' }
+        </div>
+        <div class="card" style="margin-top:18px;">
+          <h3>Student answers &amp; understanding record</h3>
+          ${store.submissions.length ? `<div class="table-wrap"><table><thead><tr><th>Date</th><th>Student</th><th>Quiz</th><th>Score</th><th>Retell</th><th>Verdict</th></tr></thead><tbody>${store.submissions.slice().reverse().map(item => `
+            <tr>
+              <td>${esc(item.date || '')}</td>
+              <td>${esc(item.name || item.username || '')}</td>
+              <td>${esc(item.quizTitle || '')}</td>
+              <td>${Number(item.score || 0)}/${Number(item.total || 0)}</td>
+              <td>${esc(item.retell || '')}</td>
+              <td>
+                <select onchange="setVerdict('${item.id}', this.value)">
+                  <option value="">Select</option>
+                  <option value="Understood" ${item.verdict === 'Understood' ? 'selected' : ''}>Understood</option>
+                  <option value="Partly" ${item.verdict === 'Partly' ? 'selected' : ''}>Partly</option>
+                  <option value="Needs review" ${item.verdict === 'Needs review' ? 'selected' : ''}>Needs review</option>
+                </select>
+              </td>
+            </tr>
+          `).join('')}</tbody></table></div>` : '<div class="empty">No quiz submissions yet.</div>'}
+        </div>
+      </section>
+    `;
+  }
+
+  function renderRecall() {
+    return `
+      <section class="page">
+        <div class="pagehead">
+          <div><h1>Recall</h1><p class="sub">Share a few notes about what you learned in class.</p></div>
+          <button class="btn" onclick="openRecallModal()">＋ Send notes</button>
+        </div>
+        <div class="card">
+          <h3>Notes sent</h3>
+          ${store.recalls.length ? store.recalls.slice().reverse().map(item => `
+            <div class="lesson">
+              <div class="row"><div><h4>${SUBJECTS.find(s => s.key === item.subject)?.icon || '📘'} ${esc(item.title)}</h4><p class="muted">${esc(item.date || '')}</p></div><button class="small-btn" onclick="deleteRecall('${item.id}')">Delete</button></div>
+              <p>${esc(item.notes || '')}</p>
+            </div>
+          `).join('') : '<div class="empty">No recall notes yet.</div>'}
+        </div>
+      </section>
+    `;
+  }
+
+  function renderRewards() {
+    const leaderboard = getLeaderboard();
+    return `
+      <section class="page">
+        <div class="pagehead">
+          <div><h1>Rewards</h1><p class="sub">Every quiz is worth 8 marks. Children collect stars in each subject.</p></div>
+        </div>
+        <div class="stats three">
+          <div class="card"><div class="statlabel">⭐ Common</div><div class="statvalue">32</div><div class="statnote">entry score</div></div>
+          <div class="card"><div class="statlabel">💎 Rare</div><div class="statvalue">56</div><div class="statnote">higher level</div></div>
+          <div class="card"><div class="statlabel">🌟 Legendary</div><div class="statvalue">160</div><div class="statnote">top milestone</div></div>
+        </div>
+        <div class="card" style="margin-top:18px;">
+          <h3>Student leaderboard</h3>
+          ${leaderboard.length ? `<div class="table-wrap"><table><thead><tr><th>Student</th>${SUBJECTS.map(s => `<th>${s.icon} ${s.key}</th>`).join('')}</tr></thead><tbody>${leaderboard.map(row => `
+            <tr><td><strong>${esc(row.name)}</strong></td>${SUBJECTS.map(s => `<td>${row.subjects[s.key] || 0}</td>`).join('')}</tr>
+          `).join('')}</tbody></table></div>` : '<div class="empty">No rewards yet.</div>'}
+        </div>
+      </section>
+    `;
+  }
+
+  function getLeaderboard() {
+    const result = {};
+    for (const entry of store.submissions) {
+      const key = entry.username || entry.name;
+      const subject = entry.subject || 'EN';
+      if (!result[key]) result[key] = { name: entry.name || key, subjects: {} };
+      result[key].subjects[subject] = Math.max(result[key].subjects[subject] || 0, Number(entry.score || 0));
+    }
+    return Object.values(result);
+  }
+
+  function renderStudentApp() {
+    const root = document.getElementById('appShell');
+    root.innerHTML = `
+      <div class="app-shell" style="padding: 28px 14px;">
+        <div style="max-width:760px;margin:auto;">
+          <div class="card">
+            <div class="row" style="margin-bottom: 20px;">
+              <div>
+                <h2 style="margin:0;">Hi ${esc(state.session?.name || 'Student')}! 👋</h2>
+                <div class="muted">Sunshine Kids student portal</div>
+              </div>
+              <button class="ghost" onclick="logout()">Log out</button>
+            </div>
+            <div id="studentMain"></div>
+          </div>
+        </div>
+      </div>
+    `;
+    renderStudentMain();
+  }
+
+  function renderStudentMain() {
+    const panel = document.getElementById('studentMain');
+    if (!panel) return;
+    const list = store.stories;
+    if (!list.length) {
+      panel.innerHTML = '<div class="empty">No quizzes are available yet. Please check back later.</div>';
+      return;
+    }
+    panel.innerHTML = list.map(item => `
+      <div class="lesson">
+        <div class="row">
+          <div>
+            <h4>${esc(item.title)}</h4>
+            <div class="muted">${SUBJECTS.find(s => s.key === item.subject)?.icon || '📘'} ${SUBJECTS.find(s => s.key === item.subject)?.label || item.subject}</div>
+          </div>
+          <button class="btn" onclick="attemptQuiz('${item.id}')">Start</button>
+        </div>
+        <p>${esc(item.text || 'Read and answer the questions below.')}</p>
+      </div>
+    `).join('');
+  }
+
+  function attemptQuiz(storyId) {
+    const story = store.stories.find(item => item.id === storyId);
+    if (!story) return;
+    state.currentQuiz = story;
+    const root = document.getElementById('studentMain');
+    root.innerHTML = `
+      <div>
+        <h3>${esc(story.title)}</h3>
+        <p class="muted">${esc(story.text || '')}</p>
+        ${story.questions.map((question, qIndex) => `
+          <div class="lesson">
+            <strong>${qIndex + 1}. ${esc(question.q)}</strong>
+            <div class="stack" style="margin-top: 10px;">
+              ${question.options.map((option, optionIndex) => `
+                <label style="display:flex; gap:10px; align-items:center;">
+                  <input type="radio" name="q_${qIndex}" value="${optionIndex}" data-qindex="${qIndex}" />
+                  <span>${esc(option)}</span>
+                </label>
+              `).join('')}
+            </div>
+          </div>
+        `).join('')}
+        <div class="field" style="margin-top:16px;">
+          <label>Retell in your own words</label>
+          <textarea id="studentRetell" rows="4" placeholder="Describe what you remember..."></textarea>
+        </div>
+        <div class="modal-actions">
+          <button class="ghost" onclick="renderStudentMain()">Back</button>
+          <button class="btn" onclick="submitQuiz()">Submit answers</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function submitQuiz() {
+    const quiz = state.currentQuiz;
+    if (!quiz) return;
+    const answers = [];
+    const inputs = document.querySelectorAll('input[type="radio"]:checked');
+    inputs.forEach(input => {
+      const qIndex = Number(input.dataset.qindex);
+      answers[qIndex] = Number(input.value);
+    });
+    if (quiz.questions.some((_, idx) => answers[idx] === undefined)) {
+      toast('Please answer every question before submitting.');
+      return;
+    }
+    let score = 0;
+    quiz.questions.forEach((question, idx) => {
+      if (answers[idx] === question.correctIndex) score += 1;
+    });
+    const retell = document.getElementById('studentRetell')?.value || '';
+    const record = {
+      id: uid('sub'),
+      quizId: quiz.id,
+      quizTitle: quiz.title,
+      subject: quiz.subject,
+      username: state.session?.username,
+      name: state.session?.name,
+      score,
+      total: quiz.questions.length,
+      retell,
+      date: dateNow(),
+      verdict: ''
+    };
+    store.submissions.push(record);
+    saveStore();
+    state.currentQuiz = null;
+    renderStudentApp();
+    toast('Quiz submitted!');
+  }
+
+  function openStudentModal(studentId = null) {
+    const current = studentId ? store.students.find(item => item.id === studentId) : null;
+    const student = current || { name: '', age: '', parent: '', contact: '', subjects: ['Math'] };
+
+    state.modal = {
+      title: studentId ? 'Edit student' : 'Add student',
+      body: `
+        <div class="form-grid">
+          <div class="field"><label>Student name</label><input name="name" value="${esc(student.name)}" required /></div>
+          <div class="two-col">
+            <div class="field"><label>Age</label><input name="age" value="${esc(student.age || '')}" /></div>
+            <div class="field"><label>Contact</label><input name="contact" value="${esc(student.contact || '')}" /></div>
+          </div>
+          <div class="field"><label>Parent / guardian</label><input name="parent" value="${esc(student.parent || '')}" /></div>
+          <div class="field"><label>Subjects</label>
+            <select name="subjects" multiple size="5">
+              ${SUBJECTS.map(subject => `<option value="${subject.key}" ${((student.subjects || []).includes(subject.key) ? 'selected' : '')}>${subject.icon} ${subject.label}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+      `,
+      action: () => {
+        const form = document.getElementById('modalForm');
+        const data = new FormData(form);
+        const selected = Array.from(form.querySelectorAll('select[name="subjects"] option:checked')).map(o => o.value);
+        const payload = {
+          id: studentId || uid('student'),
+          name: String(data.get('name') || '').trim(),
+          age: String(data.get('age') || '').trim(),
+          parent: String(data.get('parent') || '').trim(),
+          contact: String(data.get('contact') || '').trim(),
+          subjects: selected.length ? selected : ['Math']
+        };
+        if (!payload.name) {
+          toast('Student name is required.');
+          return;
+        }
+        if (studentId) {
+          const index = store.students.findIndex(item => item.id === studentId);
+          if (index >= 0) store.students[index] = payload;
+        } else {
+          store.students.push(payload);
+        }
+        saveStore();
+        closeModal();
+        renderTeacherApp();
+      }
+    };
+    renderModal();
+  }
+
+  function editStudent(id) { openStudentModal(id); }
+  function deleteStudent(id) {
+    if (!confirm('Delete this student?')) return;
+    store.students = store.students.filter(item => item.id !== id);
+    saveStore();
+    renderTeacherApp();
+  }
+
+  function openLessonModal() {
+    const form = `
+      <div class="form-grid">
+        <div class="field"><label>Lesson title</label><input name="title" required /></div>
+        <div class="two-col">
+          <div class="field"><label>Student</label><select name="studentId">${store.students.map(student => `<option value="${student.id}">${esc(student.name)}</option>`).join('')}</select></div>
+          <div class="field"><label>Subject</label><select name="subject">${SUBJECTS.map(s => `<option value="${s.key}">${s.icon} ${s.label}</option>`).join('')}</select></div>
+        </div>
+        <div class="field"><label>Date</label><input type="date" name="date" value="${dateNow()}" /></div>
+        <div class="field"><label>Notes</label><textarea name="notes" rows="5"></textarea></div>
+      </div>
+    `;
+    state.modal = { title: 'Record lesson', body: form, action: () => {
+      const formEl = document.getElementById('modalForm');
+      const fd = new FormData(formEl);
+      const title = String(fd.get('title') || '').trim();
+      if (!title) { toast('Lesson title is required.'); return; }
+      store.lessons.push({
+        id: uid('lesson'),
+        title,
+        studentId: String(fd.get('studentId') || ''),
+        studentName: studentName(String(fd.get('studentId') || '')),
+        subject: String(fd.get('subject') || 'Math'),
+        date: String(fd.get('date') || dateNow()),
+        notes: String(fd.get('notes') || '')
+      });
+      saveStore();
+      closeModal();
+      renderTeacherApp();
+    }};
+    renderModal();
+  }
+
+  function deleteLesson(id) {
+    if (!confirm('Delete this lesson?')) return;
+    store.lessons = store.lessons.filter(item => item.id !== id);
+    saveStore();
+    renderTeacherApp();
+  }
+
+  function openAttendanceModal() {
+    const form = `
+      <div class="form-grid">
+        <div class="two-col">
+          <div class="field"><label>Student</label><select name="studentId">${store.students.map(student => `<option value="${student.id}">${esc(student.name)}</option>`).join('')}</select></div>
+          <div class="field"><label>Subject</label><select name="subject">${SUBJECTS.map(s => `<option value="${s.key}">${s.icon} ${s.label}</option>`).join('')}</select></div>
+        </div>
+        <div class="two-col">
+          <div class="field"><label>Date</label><input type="date" name="date" value="${dateNow()}" /></div>
+          <div class="field"><label>Status</label><select name="status"><option>Present</option><option>Absent</option><option>Late</option></select></div>
+        </div>
+        <div class="field"><label>Note</label><input name="note" /></div>
+      </div>
+    `;
+    state.modal = { title: 'Mark attendance', body: form, action: () => {
+      const fd = new FormData(document.getElementById('modalForm'));
+      store.attendance.push({
+        id: uid('att'),
+        studentId: String(fd.get('studentId') || ''),
+        subject: String(fd.get('subject') || 'Math'),
+        date: String(fd.get('date') || dateNow()),
+        status: String(fd.get('status') || 'Present'),
+        note: String(fd.get('note') || '')
+      });
+      saveStore();
+      closeModal();
+      renderTeacherApp();
+    }};
+    renderModal();
+  }
+
+  function openProgressModal() {
+    const form = `
+      <div class="form-grid">
+        <div class="two-col">
+          <div class="field"><label>Student</label><select name="studentId">${store.students.map(student => `<option value="${student.id}">${esc(student.name)}</option>`).join('')}</select></div>
+          <div class="field"><label>Subject</label><select name="subject">${SUBJECTS.map(s => `<option value="${s.key}">${s.icon} ${s.label}</option>`).join('')}</select></div>
+        </div>
+        <div class="two-col">
+          <div class="field"><label>Date</label><input type="date" name="date" value="${dateNow()}" /></div>
+          <div class="field"><label>Score</label><input type="number" name="score" value="0" min="0" max="100" /></div>
+        </div>
+        <div class="field"><label>Teacher note</label><textarea name="note" rows="4"></textarea></div>
+      </div>
+    `;
+    state.modal = { title: 'Add assessment', body: form, action: () => {
+      const fd = new FormData(document.getElementById('modalForm'));
+      store.progress.push({
+        id: uid('progress'),
+        studentId: String(fd.get('studentId') || ''),
+        subject: String(fd.get('subject') || 'Math'),
+        date: String(fd.get('date') || dateNow()),
+        score: Number(fd.get('score') || 0),
+        note: String(fd.get('note') || '')
+      });
+      saveStore();
+      closeModal();
+      renderTeacherApp();
+    }};
+    renderModal();
+  }
+
+  function openPaymentModal() {
+    const form = `
+      <div class="form-grid">
+        <div class="two-col">
+          <div class="field"><label>Student</label><select name="studentId">${store.students.map(student => `<option value="${student.id}">${esc(student.name)}</option>`).join('')}</select></div>
+          <div class="field"><label>Date</label><input type="date" name="date" value="${dateNow()}" /></div>
+        </div>
+        <div class="two-col">
+          <div class="field"><label>Fee</label><input type="number" name="fee" min="0" step="0.01" value="0" /></div>
+          <div class="field"><label>Amount paid</label><input type="number" name="amount" min="0" step="0.01" value="0" /></div>
+        </div>
+        <div class="field"><label>Note</label><input name="note" /></div>
+      </div>
+    `;
+    state.modal = { title: 'Record tuition payment', body: form, action: () => {
+      const fd = new FormData(document.getElementById('modalForm'));
+      store.payments.push({
+        id: uid('payment'),
+        studentId: String(fd.get('studentId') || ''),
+        fee: Number(fd.get('fee') || 0),
+        amount: Number(fd.get('amount') || 0),
+        date: String(fd.get('date') || dateNow()),
+        note: String(fd.get('note') || '')
+      });
+      saveStore();
+      closeModal();
+      renderTeacherApp();
+    }};
+    renderModal();
+  }
+
+  function openStudentLoginModal() {
+    state.modal = { title: 'Add student login', body: `
+      <div class="form-grid">
+        <div class="field"><label>Student full name</label><input name="name" required /></div>
+        <div class="two-col">
+          <div class="field"><label>Username</label><input name="username" required /></div>
+          <div class="field"><label>Password</label><input type="password" name="password" required /></div>
+        </div>
+      </div>
+    `, action: () => {
+      const fd = new FormData(document.getElementById('modalForm'));
+      const username = String(fd.get('username') || '').trim().toLowerCase();
+      const name = String(fd.get('name') || '').trim();
+      const password = String(fd.get('password') || '').trim();
+      if (!name || !username || !password) { toast('Please fill in all fields.'); return; }
+      if (store.accounts.some(account => account.id === username)) { toast('That username already exists.'); return; }
+      store.accounts.push({ id: username, role: 'student', name, password });
+      saveStore();
+      closeModal();
+      renderTeacherApp();
+    }};
+    renderModal();
+  }
+
+  function resetStudentPassword(username) {
+    const value = prompt('Enter a new password for this student');
+    if (value === null) return;
+    const pass = value.trim();
+    if (!pass) { toast('Password cannot be empty.'); return; }
+    const account = store.accounts.find(item => item.id === username && item.role === 'student');
+    if (!account) return;
+    account.password = pass;
+    saveStore();
+    toast('Password updated.');
+    renderTeacherApp();
+  }
+
+  function deleteStudentAccount(username) {
+    if (!confirm('Remove this student login?')) return;
+    store.accounts = store.accounts.filter(item => !(item.role === 'student' && item.id === username));
+    saveStore();
+    renderTeacherApp();
+  }
+
+  function openQuizModal() {
+    const form = `
+      <div class="form-grid">
+        <div class="field"><label>Quiz title</label><input name="title" required /></div>
+        <div class="two-col">
+          <div class="field"><label>Subject</label><select name="subject">${SUBJECTS.map(s => `<option value="${s.key}">${s.icon} ${s.label}</option>`).join('')}</select></div>
+          <div class="field"><label>Reading / prompt</label><input name="text" placeholder="Optional reading text" /></div>
+        </div>
+        <div class="field"><label>Question 1</label><input name="q1" required /></div>
+        <div class="field"><label>Question 1 answers</label><input name="q1opts" required placeholder="A,B,C,D separated by commas" /></div>
+        <div class="field"><label>Correct answer index for Q1 (0-3)</label><input name="q1correct" type="number" min="0" max="3" value="0" /></div>
+        <div class="field"><label>Question 2</label><input name="q2" required /></div>
+        <div class="field"><label>Question 2 answers</label><input name="q2opts" required placeholder="A,B,C,D separated by commas" /></div>
+        <div class="field"><label>Correct answer index for Q2 (0-3)</label><input name="q2correct" type="number" min="0" max="3" value="0" /></div>
+        <div class="field"><label>Question 3</label><input name="q3" required /></div>
+        <div class="field"><label>Question 3 answers</label><input name="q3opts" required placeholder="A,B,C,D separated by commas" /></div>
+        <div class="field"><label>Correct answer index for Q3 (0-3)</label><input name="q3correct" type="number" min="0" max="3" value="0" /></div>
+      </div>
+    `;
+    state.modal = { title: 'New quiz', body: form, action: () => {
+      const fd = new FormData(document.getElementById('modalForm'));
+      const title = String(fd.get('title') || '').trim();
+      if (!title) { toast('Quiz title is required.'); return; }
+      const buildQuestion = (qField, optionsField, correctField) => {
+        const options = String(fd.get(optionsField) || '').split(',').map(item => item.trim()).filter(Boolean);
+        if (options.length < 2) throw new Error('Each question needs at least 2 answer choices.');
+        return {
+          q: String(fd.get(qField) || '').trim(),
+          options,
+          correctIndex: Number(fd.get(correctField) || 0)
+        };
+      };
+      try {
+        const questions = [
+          buildQuestion('q1', 'q1opts', 'q1correct'),
+          buildQuestion('q2', 'q2opts', 'q2correct'),
+          buildQuestion('q3', 'q3opts', 'q3correct')
+        ];
+        store.stories.push({
+          id: uid('story'),
+          title,
+          subject: String(fd.get('subject') || 'Math'),
+          text: String(fd.get('text') || ''),
+          questions,
+          created: dateNow()
+        });
+        saveStore();
+        closeModal();
+        renderTeacherApp();
+      } catch (error) {
+        toast(error.message || 'Could not create quiz.');
+      }
+    }};
+    renderModal();
+  }
+
+  function deleteQuiz(id) {
+    if (!confirm('Delete this quiz?')) return;
+    store.stories = store.stories.filter(item => item.id !== id);
+    saveStore();
+    renderTeacherApp();
+  }
+
+  function setVerdict(id, value) {
+    const record = store.submissions.find(item => item.id === id);
+    if (!record) return;
+    record.verdict = value || '';
+    saveStore();
+    renderTeacherApp();
+  }
+
+  function openRecallModal() {
+    const form = `
+      <div class="form-grid">
+        <div class="two-col">
+          <div class="field"><label>Subject</label><select name="subject">${SUBJECTS.map(s => `<option value="${s.key}">${s.icon} ${s.label}</option>`).join('')}</select></div>
+          <div class="field"><label>Date</label><input type="date" name="date" value="${dateNow()}" /></div>
+        </div>
+        <div class="field"><label>Title</label><input name="title" required /></div>
+        <div class="field"><label>Notes</label><textarea name="notes" rows="5" required></textarea></div>
+      </div>
+    `;
+    state.modal = { title: 'Send notes to students', body: form, action: () => {
+      const fd = new FormData(document.getElementById('modalForm'));
+      const title = String(fd.get('title') || '').trim();
+      const notes = String(fd.get('notes') || '').trim();
+      if (!title || !notes) { toast('Title and notes are required.'); return; }
+      store.recalls.push({ id: uid('recall'), subject: String(fd.get('subject') || 'Math'), date: String(fd.get('date') || dateNow()), title, notes });
+      saveStore();
+      closeModal();
+      renderTeacherApp();
+    }};
+    renderModal();
+  }
+
+  function deleteRecall(id) {
+    if (!confirm('Delete these notes?')) return;
+    store.recalls = store.recalls.filter(item => item.id !== id);
+    saveStore();
+    renderTeacherApp();
+  }
+
+  function clearAllData() {
+    if (!confirm('This will reset all app data. Continue?')) return;
+    const fresh = structuredClone(DEFAULT_STORE);
+    Object.assign(store, fresh);
+    saveStore();
+    renderTeacherApp();
+    toast('All app data cleared.');
+  }
+
+  function renderModal() {
+    const root = document.getElementById('appShell');
+    const existingModal = document.getElementById('floatingModal');
+    if (existingModal) existingModal.remove();
+    const content = state.modal ? `
+      <div id="floatingModal" class="modal-backdrop" onclick="if (event.target.id === 'floatingModal') closeModal();">
+        <div class="modal" role="dialog" aria-modal="true">
+          <div class="row" style="margin-bottom:16px;"><h3>${state.modal.title}</h3><button class="ghost" onclick="closeModal()">Close</button></div>
+          <form id="modalForm">${state.modal.body}</form>
+          <div class="modal-actions">
+            <button class="ghost" onclick="closeModal()">Cancel</button>
+            <button class="btn" onclick="state.modal.action();">Save</button>
+          </div>
+        </div>
+      </div>
+    ` : '';
+    root.insertAdjacentHTML('beforeend', content);
+  }
+
+  function closeModal() {
+    state.modal = null;
+    const modal = document.getElementById('floatingModal');
+    if (modal) modal.remove();
+  }
+
+  function bootstrap() {
+    if (state.session) {
+      if (state.session.role === 'teacher') renderTeacherApp();
+      else renderStudentApp();
+    } else {
+      renderAuth();
+    }
+  }
+
+  bootstrap();
+</script>
+</body>
+</html>
